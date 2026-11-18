@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የሽያጭ፣ ወጪ፣ ዱቤ እና ትእዛዝ መመዝገቢያ ሲስተም</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #eef2f7;
+            color: #1e293b;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 560px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 14px;
+            color: #0f172a;
+            font-size: 19px;
+            letter-spacing: -0.2px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+        .sync-status {
+            text-align: center;
+            font-size: 11px;
+            color: #16a34a;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .btn {
+            padding: 14px 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            text-align: center;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-kelil {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+        .btn-nesre {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+        }
+        .btn-view {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+        .btn-expense {
+            background: linear-gradient(135deg, #db2777, #be185d);
+        }
+        .btn-credit {
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+        }
+        .btn-order {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+        .btn-settings {
+            background: linear-gradient(135deg, #475569, #334155);
+            grid-column: span 2;
+        }
+        .btn-toggle-form {
+            width: 100%;
+            background: linear-gradient(135deg, #ea580c, #c2410c);
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 12px;
+        }
+        .btn-toggle-expense {
+            width: 100%;
+            background: linear-gradient(135deg, #db2777, #be185d);
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 12px;
+        }
+        .btn-toggle-credit {
+            width: 100%;
+            background: linear-gradient(135deg, #0d9488, #0f766e);
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 12px;
+        }
+        .btn-toggle-order {
+            width: 100%;
+            background: linear-gradient(135deg, #d97706, #b45309);
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 12px;
+        }
+        .btn-toggle-pin {
+            width: 100%;
+            background: linear-gradient(135deg, #475569, #334155);
+            margin-bottom: 12px;
+            font-size: 14px;
+            padding: 12px;
+        }
+        .btn-back {
+            background-color: #64748b;
+            padding: 7px 12px;
+            font-size: 12px;
+            margin-bottom: 14px;
+            width: auto;
+            display: inline-block;
+            box-shadow: none;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            width: 100%;
+            margin-top: 8px;
+        }
+        .btn-delete {
+            background-color: #ef4444;
+            padding: 3px 7px;
+            font-size: 11px;
+            border-radius: 4px;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .hidden {
+            display: none;
+        }
+        .form-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group:last-of-type {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #334155;
+        }
+        input {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+        .live-remaining-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 11px;
+            margin-bottom: 12px;
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #92400e;
+        }
+        .search-box {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .search-input {
+            border: 1.5px solid #d97706;
+            background-color: #fffbeb;
+            font-size: 13px;
+            padding: 8px 11px;
+        }
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .scroll-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+            text-align: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 5px 4px;
+            text-align: left;
+            font-size: 11px;
+            line-height: 1.25;
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #f1f5f9;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .sales-table th:nth-child(1), .sales-table td:nth-child(1) { width: 17%; }
+        .sales-table th:nth-child(2), .sales-table td:nth-child(2) { width: 35%; }
+        .sales-table th:nth-child(3), .sales-table td:nth-child(3) { width: 11%; text-align: center; }
+        .sales-table th:nth-child(4), .sales-table td:nth-child(4) { width: 23%; }
+        .sales-table th:nth-child(5), .sales-table td:nth-child(5) { width: 14%; text-align: center; }
+
+        .expense-table th:nth-child(1), .expense-table td:nth-child(1) { width: 18%; }
+        .expense-table th:nth-child(2), .expense-table td:nth-child(2) { width: 46%; }
+        .expense-table th:nth-child(3), .expense-table td:nth-child(3) { width: 22%; }
+        .expense-table th:nth-child(4), .expense-table td:nth-child(4) { width: 14%; text-align: center; }
+
+        .credit-table th:nth-child(1), .credit-table td:nth-child(1) { width: 16%; }
+        .credit-table th:nth-child(2), .credit-table td:nth-child(2) { width: 26%; }
+        .credit-table th:nth-child(3), .credit-table td:nth-child(3) { width: 24%; }
+        .credit-table th:nth-child(4), .credit-table td:nth-child(4) { width: 20%; }
+        .credit-table th:nth-child(5), .credit-table td:nth-child(5) { width: 14%; text-align: center; }
+
+        .order-table {
+            min-width: 620px;
+            width: 620px;
+            table-layout: fixed;
+        }
+        .order-table th, .order-table td {
+            font-size: 12px;
+            padding: 6px 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .order-table th:nth-child(1), .order-table td:nth-child(1) { width: 70px; }
+        .order-table th:nth-child(2), .order-table td:nth-child(2) { width: 125px; }
+        .order-table th:nth-child(3), .order-table td:nth-child(3) { width: 155px; }
+        .order-table th:nth-child(4), .order-table td:nth-child(4) { width: 75px; }
+        .order-table th:nth-child(5), .order-table td:nth-child(5) { width: 75px; }
+        .order-table th:nth-child(6), .order-table td:nth-child(6) { width: 75px; }
+        .order-table th:nth-child(7), .order-table td:nth-child(7) { width: 45px; text-align: center; }
+
+        .summary-box {
+            margin-top: 14px;
+            padding: 12px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-weight: 600;
+        }
+        .summary-row.net {
+            margin-top: 6px;
+            padding-top: 8px;
+            border-top: 1px dashed #94a3b8;
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .success-msg {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 7px 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+        }
+        .error-msg {
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 7px 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+        }
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="sync-status" class="sync-status">Firebase በመገናኘት ላይ...</div>
+
+    <div id="home-section">
+        <h1>ዋና ካታሎግ</h1>
+        <p class="subtitle">እባክዎ የሚፈልጉትን ክፍል ይምረጡ</p>
+        <div class="grid-buttons">
+            <button class="btn btn-kelil" onclick="requestCatalogAccess('ከሊል')">ከሊል</button>
+            <button class="btn btn-nesre" onclick="requestCatalogAccess('ነስሬ')">ነስሬ</button>
+        </div>
+    </div>
+
+    <div id="pin-section" class="hidden">
+        <button class="btn btn-back" onclick="goHome()">← ተመለስ</button>
+        <h2 id="pin-title">የፓስወርድ ማረጋገጫ</h2>
+        <p class="subtitle" id="pin-subtitle">የመግቢያ ፓስወርድ ያስገቡ (መነሻ፡ 1234)</p>
+        <div class="form-card">
+            <div class="form-group">
+                <label for="pin-input">ፓስወርድ</label>
+                <input type="password" id="pin-input" placeholder="ፓስወርድ ያስገቡ">
+            </div>
+            <button class="btn btn-submit" onclick="verifyPin()">ክፈት</button>
+            <div id="pin-error-msg" class="error-msg">የተሳሳተ ፓስወርድ ነው!</div>
+        </div>
+    </div>
+
+    <div id="menu-section" class="hidden">
+        <button class="btn btn-back" onclick="goHome()">← ወደ ዋናው ገጽ</button>
+        <h2 id="catalog-title">የከሊል ካታሎግ</h2>
+        <div class="grid-buttons">
+            <button class="btn btn-view" onclick="showRegisteredItems()">የተመዘገበ እቃ ማያ</button>
+            <button class="btn btn-expense" onclick="showExpenseSection()">የወጣ ወጪ</button>
+            <button class="btn btn-credit" onclick="showCreditSection()">ዱቤ</button>
+            <button class="btn btn-order" onclick="showOrderSection()">ትእዛዝ</button>
+            <button class="btn btn-settings" onclick="showSettingsSection()">ፓስወርድ ቀይር</button>
+        </div>
+    </div>
+
+    <div id="view-section" class="hidden">
+        <button class="btn btn-back" onclick="backToMenu()">← ተመለስ</button>
+        <h2 id="view-title">የተመዘገቡ እቃዎች</h2>
+
+        <button id="toggle-sales-btn" class="btn btn-toggle-form" onclick="toggleSalesForm()">
+            + የተሸጠ እቃ መመዝገቢያ ክፈት
+        </button>
+
+        <div id="sales-form-box" class="form-card hidden">
+            <div class="form-group">
+                <label for="item-name">የእቃው ስም / ኮድ</label>
+                <input type="text" id="item-name" placeholder="ለምሳሌ፡ ፍራሽ 1.50">
+            </div>
+            <div class="form-group">
+                <label for="item-qty">ብዛት</label>
+                <input type="number" id="item-qty" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label for="item-price">የአንዱ ዋጋ (ብር)</label>
+                <input type="number" id="item-price" placeholder="ለምሳሌ፡ 5000">
+            </div>
+            <button class="btn btn-submit" onclick="saveItem()">መዝግብ</button>
+            <div id="sales-success-msg" class="success-msg">እቃው ተመዝግቧል!</div>
+        </div>
+
+        <div class="section-label">የተመዘገቡ እቃዎች ዝርዝር</div>
+        <div class="table-wrap">
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th>ቀን</th>
+                        <th>እቃ</th>
+                        <th>ብዛት</th>
+                        <th>ዋጋ</th>
+                        <th>ድርጊት</th>
+                    </tr>
+                </thead>
+                <tbody id="items-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row">
+                <span>ጠቅላላ ሽያጭ፡</span>
+                <span id="sales-total-val" style="color: #16a34a;">0 ብር</span>
+            </div>
+            <div class="summary-row">
+                <span>ጠቅላላ ወጪ፡</span>
+                <span id="sales-expense-val" style="color: #dc2626;">0 ብር</span>
+            </div>
+            <div class="summary-row net">
+                <span>ቀሪ (ሽያጭ - ወጪ)፡</span>
+                <span id="sales-net-val" style="color: #2563eb;">0 ብር</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="expense-section" class="hidden">
+        <button class="btn btn-back" onclick="backToMenu()">← ተመለስ</button>
+        <h2 id="expense-title">የወጣ ወጪ</h2>
+
+        <button id="toggle-expense-btn" class="btn btn-toggle-expense" onclick="toggleExpenseForm()">
+            + ወጪ መመዝገቢያ ክፈት
+        </button>
+
+        <div id="expense-form-box" class="form-card hidden">
+            <div class="form-group">
+                <label for="expense-desc">የወጪ ዝርዝር</label>
+                <input type="text" id="expense-desc" placeholder="ለምሳሌ፡ ትራንስፖርት">
+            </div>
+            <div class="form-group">
+                <label for="expense-amount">የወጪ መጠን (ብር)</label>
+                <input type="number" id="expense-amount" placeholder="ለምሳሌ፡ 500">
+            </div>
+            <button class="btn btn-submit" onclick="saveExpense()">ወጪ መዝግብ</button>
+            <div id="expense-success-msg" class="success-msg">ወጪው ተመዝግቧል!</div>
+        </div>
+
+        <div class="section-label">የተመዘገቡ ወጪዎች</div>
+        <div class="table-wrap">
+            <table class="expense-table">
+                <thead>
+                    <tr>
+                        <th>ቀን</th>
+                        <th>ዝርዝር</th>
+                        <th>ወጪ</th>
+                        <th>ድርጊት</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row">
+                <span>ጠቅላላ ሽያጭ፡</span>
+                <span id="exp-sales-val" style="color: #16a34a;">0 ብር</span>
+            </div>
+            <div class="summary-row">
+                <span>ጠቅላላ ወጪ፡</span>
+                <span id="exp-expense-val" style="color: #dc2626;">0 ብር</span>
+            </div>
+            <div class="summary-row net">
+                <span>ቀሪ (ሽያጭ - ወጪ)፡</span>
+                <span id="exp-net-val" style="color: #2563eb;">0 ብር</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="credit-section" class="hidden">
+        <button class="btn btn-back" onclick="backToMenu()">← ተመለስ</button>
+        <h2 id="credit-title">ዱቤ</h2>
+
+        <button id="toggle-credit-btn" class="btn btn-toggle-credit" onclick="toggleCreditForm()">
+            + ዱቤ መመዝገቢያ ክፈት
+        </button>
+
+        <div id="credit-form-box" class="form-card hidden">
+            <div class="form-group">
+                <label for="credit-person">በዱቤ የወሰደው ሰው ስም</label>
+                <input type="text" id="credit-person" placeholder="ለምሳሌ፡ አቶ ካሳ">
+            </div>
+            <div class="form-group">
+                <label for="credit-item">የወሰደው እቃ / ዝርዝር</label>
+                <input type="text" id="credit-item" placeholder="ለምሳሌ፡ ፍራሽ 1.20">
+            </div>
+            <div class="form-group">
+                <label for="credit-amount">የዱቤ መጠን (ብር)</label>
+                <input type="number" id="credit-amount" placeholder="ለምሳሌ፡ 3500">
+            </div>
+            <button class="btn btn-submit" onclick="saveCredit()">ዱቤ መዝግብ</button>
+            <div id="credit-success-msg" class="success-msg">ዱቤው ተመዝግቧል!</div>
+        </div>
+
+        <div class="section-label">የዱቤ ዝርዝር (ከሽያጭና ከወጪ የተለየ)</div>
+        <div class="table-wrap">
+            <table class="credit-table">
+                <thead>
+                    <tr>
+                        <th>ቀን</th>
+                        <th>ስም</th>
+                        <th>እቃ</th>
+                        <th>ዱቤ</th>
+                        <th>ድርጊት</th>
+                    </tr>
+                </thead>
+                <tbody id="credit-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row net">
+                <span>ጠቅላላ ዱቤ፡</span>
+                <span id="credit-total-val" style="color: #0d9488;">0 ብር</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="order-section" class="hidden">
+        <button class="btn btn-back" onclick="backToMenu()">← ተመለስ</button>
+        <h2 id="order-title">ትእዛዝ</h2>
+
+        <button id="toggle-order-btn" class="btn btn-toggle-order" onclick="toggleOrderForm()">
+            + ትእዛዝ መመዝገቢያ ክፈት
+        </button>
+
+        <div id="order-form-box" class="form-card hidden">
+            <div class="form-group">
+                <label for="order-person">የደንበኛው ስም</label>
+                <input type="text" id="order-person" placeholder="ለምሳሌ፡ ወ/ሮ ሰላም">
+            </div>
+            <div class="form-group">
+                <label for="order-item">ምን እንዳዘዘ (ዝርዝር)</label>
+                <input type="text" id="order-item" placeholder="ለምሳሌ፡ አረብያን መጅሊስ ሙሉ">
+            </div>
+            <div class="form-group">
+                <label for="order-total">ጠቅላላ ዋጋ (ብር)</label>
+                <input type="number" id="order-total" placeholder="ለምሳሌ፡ 12000" oninput="updateLiveOrderRemaining()">
+            </div>
+            <div class="form-group">
+                <label for="order-deposit">ቀብድ (ብር)</label>
+                <input type="number" id="order-deposit" placeholder="ለምሳሌ፡ 5000" oninput="updateLiveOrderRemaining()">
+            </div>
+            <div class="live-remaining-box">
+                <span>ቀሪ፡</span>
+                <span id="order-live-remaining">0 ብር</span>
+            </div>
+            <button class="btn btn-submit" onclick="saveOrder()">ትእዛዝ መዝግብ</button>
+            <div id="order-success-msg" class="success-msg">ትእዛዙ ተመዝግቧል!</div>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="order-search-input" class="search-input" placeholder="🔍 የደንበኛ ስም እዚህ ይፈልጉ..." oninput="renderAll()">
+        </div>
+
+        <div class="section-label">የትእዛዝ ዝርዝር (ከሽያጭና ከወጪ የተለየ)</div>
+        <div class="scroll-hint">↔ ወደ ጎን ማንሸራተት ይቻላል</div>
+        <div class="table-wrap">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>ቀን</th>
+                        <th>ስም</th>
+                        <th>ትእዛዝ</th>
+                        <th>ዋጋ</th>
+                        <th>ቀብድ</th>
+                        <th>ቀሪ</th>
+                        <th>ድርጊት</th>
+                    </tr>
+                </thead>
+                <tbody id="order-table-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row">
+                <span>ጠቅላላ የትእዛዝ ዋጋ፡</span>
+                <span id="order-sum-total" style="color: #0f172a;">0 ብር</span>
+            </div>
+            <div class="summary-row">
+                <span>ጠቅላላ ቀብድ፡</span>
+                <span id="order-sum-deposit" style="color: #16a34a;">0 ብር</span>
+            </div>
+            <div class="summary-row net">
+                <span>ጠቅላላ ቀሪ፡</span>
+                <span id="order-sum-remaining" style="color: #d97706;">0 ብር</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-section" class="hidden">
+        <button class="btn btn-back" onclick="backToMenu()">← ተመለስ</button>
+        <h2 id="settings-title">የፓስወርድ ሴቲንግ</h2>
+
+        <button id="toggle-pin-btn" class="btn btn-toggle-pin" onclick="togglePinForm()">
+            + ፓስወርድ መቀየሪያ ክፈት
+        </button>
+
+        <div id="pin-form-box" class="form-card hidden">
+            <div class="form-group">
+                <label for="old-pin-input">የአሁኑ ፓስወርድ</label>
+                <input type="password" id="old-pin-input" placeholder="የአሁኑን ፓስወርድ ያስገቡ">
+            </div>
+            <div class="form-group">
+                <label for="new-pin-input">አዲስ ፓስወርድ</label>
+                <input type="password" id="new-pin-input" placeholder="አዲስ ፓስወርድ ያስገቡ">
+            </div>
+            <button class="btn btn-submit" onclick="changePin()">ፓስወርድ ቀይር</button>
+            <div id="pin-change-success" class="success-msg">ፓስወርዱ በተሳካ ሁኔታ ተቀይሯል!</div>
+            <div id="pin-change-error" class="error-msg">የአሁኑ ፓስወርድ የተሳሳተ ነው!</div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+        getDatabase,
+        ref,
+        push,
+        remove,
+        set,
+        onValue
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCU1K216oUGR4lpbqWRrXI9OMrhXr8iojo",
+        authDomain: "kelilnesre-91eb9.firebaseapp.com",
+        databaseURL: "https://kelilnesre-91eb9-default-rtdb.firebaseio.com",
+        projectId: "kelilnesre-91eb9",
+        storageBucket: "kelilnesre-91eb9.firebasestorage.app",
+        messagingSenderId: "877439262742",
+        appId: "1:877439262742:web:fa5a3a3b75e4d268469537",
+        measurementId: "G-XC7BPNZCGT"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let currentCatalog = '';
+    let pendingCatalog = '';
+    let unsubscribers = [];
+
+    const state = {
+        sales: [],
+        expenses: [],
+        credits: [],
+        orders: [],
+        pins: { 'ከሊል': '1234', 'ነስሬ': '1234' }
+    };
+
+    const statusEl = document.getElementById('sync-status');
+
+    const pinsRef = ref(db, 'catalog_pins');
+    onValue(pinsRef, (snapshot) => {
+        statusEl.innerText = 'Firebase ተገናኝቷል (Live Sync)';
+        statusEl.style.color = '#16a34a';
+        const data = snapshot.val();
+        if (data) {
+            if (data['ከሊል']) state.pins['ከሊል'] = String(data['ከሊል']);
+            if (data['ነስሬ']) state.pins['ነስሬ'] = String(data['ነስሬ']);
+        }
+    }, (error) => {
+        console.error('Firebase Error:', error);
+        statusEl.innerText = 'የዳታቤዝ ግንኙነት ስህተት: ' + error.message;
+        statusEl.style.color = '#dc2626';
+    });
+
+    function catalogKey(name) {
+        return name === 'ከሊል' ? 'kelil' : 'nesre';
+    }
+
+    function clearListeners() {
+        unsubscribers.forEach(unsub => {
+            if (typeof unsub === 'function') unsub();
+        });
+        unsubscribers = [];
+    }
+
+    function subscribeCatalog(name) {
+        clearListeners();
+        const key = catalogKey(name);
+
+        const bindList = (pathName, targetArr) => {
+            const colRef = ref(db, `catalogs/${key}/${pathName}`);
+            const unsub = onValue(colRef, (snapshot) => {
+                const raw = snapshot.val();
+                if (!raw) {
+                    state[targetArr] = [];
+                } else {
+                    state[targetArr] = Object.entries(raw).map(([firebaseKey, val]) => ({
+                        docId: firebaseKey,
+                        ...val
+                    })).sort((a, b) => (a.id || 0) - (b.id || 0));
+                }
+                renderAll();
+            }, (error) => {
+                console.error(pathName, error);
+                statusEl.innerText = 'ማንበብ አልተቻለም: ' + error.message;
+                statusEl.style.color = '#dc2626';
+            });
+            unsubscribers.push(unsub);
+        };
+
+        bindList('sales', 'sales');
+        bindList('expenses', 'expenses');
+        bindList('credits', 'credits');
+        bindList('orders', 'orders');
+    }
+
+    function getCatalogPin(catalogName) {
+        return state.pins[catalogName] || '1234';
+    }
+
+    window.requestCatalogAccess = function(name) {
+        pendingCatalog = name;
+        document.getElementById('home-section').classList.add('hidden');
+        document.getElementById('pin-section').classList.remove('hidden');
+        document.getElementById('pin-title').innerText = name + ' - ፓስወርድ ያስገቡ';
+        document.getElementById('pin-input').value = '';
+        document.getElementById('pin-error-msg').style.display = 'none';
+    };
+
+    window.verifyPin = function() {
+        const entered = document.getElementById('pin-input').value.trim();
+        const savedPin = getCatalogPin(pendingCatalog);
+
+        if (entered === savedPin) {
+            currentCatalog = pendingCatalog;
+            subscribeCatalog(currentCatalog);
+            document.getElementById('pin-section').classList.add('hidden');
+            document.getElementById('menu-section').classList.remove('hidden');
+            document.getElementById('catalog-title').innerText = 'የ' + currentCatalog + ' ካታሎግ';
+        } else {
+            document.getElementById('pin-error-msg').style.display = 'block';
+        }
+    };
+
+    window.goHome = function() {
+        clearListeners();
+        currentCatalog = '';
+        pendingCatalog = '';
+        document.getElementById('pin-section').classList.add('hidden');
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('home-section').classList.remove('hidden');
+    };
+
+    window.backToMenu = function() {
+        document.getElementById('view-section').classList.add('hidden');
+        document.getElementById('expense-section').classList.add('hidden');
+        document.getElementById('credit-section').classList.add('hidden');
+        document.getElementById('order-section').classList.add('hidden');
+        document.getElementById('settings-section').classList.add('hidden');
+        document.getElementById('menu-section').classList.remove('hidden');
+        resetForms();
+    };
+
+    function resetForms() {
+        document.getElementById('sales-form-box').classList.add('hidden');
+        document.getElementById('toggle-sales-btn').innerText = '+ የተሸጠ እቃ መመዝገቢያ ክፈት';
+        document.getElementById('expense-form-box').classList.add('hidden');
+        document.getElementById('toggle-expense-btn').innerText = '+ ወጪ መመዝገቢያ ክፈት';
+        document.getElementById('credit-form-box').classList.add('hidden');
+        document.getElementById('toggle-credit-btn').innerText = '+ ዱቤ መመዝገቢያ ክፈት';
+        document.getElementById('order-form-box').classList.add('hidden');
+        document.getElementById('toggle-order-btn').innerText = '+ ትእዛዝ መመዝገቢያ ክፈት';
+        document.getElementById('order-live-remaining').innerText = '0 ብር';
+        document.getElementById('pin-form-box').classList.add('hidden');
+        document.getElementById('toggle-pin-btn').innerText = '+ ፓስወርድ መቀየሪያ ክፈት';
+    }
+
+    window.updateLiveOrderRemaining = function() {
+        const total = parseFloat(document.getElementById('order-total').value) || 0;
+        const deposit = parseFloat(document.getElementById('order-deposit').value) || 0;
+        document.getElementById('order-live-remaining').innerText = (total - deposit).toLocaleString() + ' ብር';
+    };
+
+    window.toggleSalesForm = function() {
+        const box = document.getElementById('sales-form-box');
+        const btn = document.getElementById('toggle-sales-btn');
+        const isHidden = box.classList.contains('hidden');
+        box.classList.toggle('hidden');
+        btn.innerText = isHidden ? '− የተሸጠ እቃ መመዝገቢያ ዝጋ' : '+ የተሸጠ እቃ መመዝገቢያ ክፈት';
+    };
+
+    window.toggleExpenseForm = function() {
+        const box = document.getElementById('expense-form-box');
+        const btn = document.getElementById('toggle-expense-btn');
+        const isHidden = box.classList.contains('hidden');
+        box.classList.toggle('hidden');
+        btn.innerText = isHidden ? '− ወጪ መመዝገቢያ ዝጋ' : '+ ወጪ መመዝገቢያ ክፈት';
+    };
+
+    window.toggleCreditForm = function() {
+        const box = document.getElementById('credit-form-box');
+        const btn = document.getElementById('toggle-credit-btn');
+        const isHidden = box.classList.contains('hidden');
+        box.classList.toggle('hidden');
+        btn.innerText = isHidden ? '− ዱቤ መመዝገቢያ ዝጋ' : '+ ዱቤ መመዝገቢያ ክፈት';
+    };
+
+    window.toggleOrderForm = function() {
+        const box = document.getElementById('order-form-box');
+        const btn = document.getElementById('toggle-order-btn');
+        const isHidden = box.classList.contains('hidden');
+        box.classList.toggle('hidden');
+        btn.innerText = isHidden ? '− ትእዛዝ መመዝገቢያ ዝጋ' : '+ ትእዛዝ መመዝገቢያ ክፈት';
+    };
+
+    window.togglePinForm = function() {
+        const box = document.getElementById('pin-form-box');
+        const btn = document.getElementById('toggle-pin-btn');
+        const isHidden = box.classList.contains('hidden');
+        box.classList.toggle('hidden');
+        btn.innerText = isHidden ? '− ፓስወርድ መቀየሪያ ዝጋ' : '+ ፓስወርድ መቀየሪያ ክፈት';
+    };
+
+    window.showRegisteredItems = function() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('view-section').classList.remove('hidden');
+        document.getElementById('view-title').innerText = currentCatalog + ' - የተመዘገበ እቃ ማያ';
+        document.getElementById('sales-success-msg').style.display = 'none';
+        renderAll();
+    };
+
+    window.showExpenseSection = function() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('expense-section').classList.remove('hidden');
+        document.getElementById('expense-title').innerText = currentCatalog + ' - የወጣ ወጪ';
+        document.getElementById('expense-success-msg').style.display = 'none';
+        renderAll();
+    };
+
+    window.showCreditSection = function() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('credit-section').classList.remove('hidden');
+        document.getElementById('credit-title').innerText = currentCatalog + ' - ዱቤ';
+        document.getElementById('credit-success-msg').style.display = 'none';
+        renderAll();
+    };
+
+    window.showOrderSection = function() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('order-section').classList.remove('hidden');
+        document.getElementById('order-title').innerText = currentCatalog + ' - ትእዛዝ';
+        document.getElementById('order-success-msg').style.display = 'none';
+        document.getElementById('order-search-input').value = '';
+        updateLiveOrderRemaining();
+        renderAll();
+    };
+
+    window.showSettingsSection = function() {
+        document.getElementById('menu-section').classList.add('hidden');
+        document.getElementById('settings-section').classList.remove('hidden');
+        document.getElementById('settings-title').innerText = currentCatalog + ' - ፓስወርድ ሴቲንግ';
+        document.getElementById('pin-change-success').style.display = 'none';
+        document.getElementById('pin-change-error').style.display = 'none';
+    };
+
+    window.saveItem = async function() {
+        const name = document.getElementById('item-name').value.trim();
+        const qty = parseInt(document.getElementById('item-qty').value);
+        const price = parseFloat(document.getElementById('item-price').value);
+
+        if (!name || isNaN(qty) || isNaN(price) || qty <= 0 || price < 0) {
+            alert('እባክዎ የእቃውን ስም፣ ብዛት እና ዋጋ በትክክል ይሙሉ!');
+            return;
+        }
+
+        const today = new Date();
+        const dateStr = today.getDate() + '/' + (today.getMonth() + 1);
+
+        try {
+            await push(ref(db, `catalogs/${catalogKey(currentCatalog)}/sales`), {
+                id: Date.now(),
+                date: dateStr,
+                name: name,
+                qty: qty,
+                price: price,
+                total: qty * price
+            });
+
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-qty').value = '1';
+            document.getElementById('item-price').value = '';
+
+            const msg = document.getElementById('sales-success-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 1500);
+        } catch (err) {
+            alert('መመዝገብ አልተቻለም: ' + err.message);
+        }
+    };
+
+    window.saveExpense = async function() {
+        const desc = document.getElementById('expense-desc').value.trim();
+        const amount = parseFloat(document.getElementById('expense-amount').value);
+
+        if (!desc || isNaN(amount) || amount <= 0) {
+            alert('እባክዎ የወጪ ዝርዝር እና መጠን በትክክል ይሙሉ!');
+            return;
+        }
+
+        const today = new Date();
+        const dateStr = today.getDate() + '/' + (today.getMonth() + 1);
+
+        try {
+            await push(ref(db, `catalogs/${catalogKey(currentCatalog)}/expenses`), {
+                id: Date.now(),
+                date: dateStr,
+                desc: desc,
+                amount: amount
+            });
+
+            document.getElementById('expense-desc').value = '';
+            document.getElementById('expense-amount').value = '';
+
+            const msg = document.getElementById('expense-success-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 1500);
+        } catch (err) {
+            alert('መመዝገብ አልተቻለም: ' + err.message);
+        }
+    };
+
+    window.saveCredit = async function() {
+        const person = document.getElementById('credit-person').value.trim();
+        const item = document.getElementById('credit-item').value.trim();
+        const amount = parseFloat(document.getElementById('credit-amount').value);
+
+        if (!person || !item || isNaN(amount) || amount <= 0) {
+            alert('እባክዎ የሰውን ስም፣ የወሰደውን እቃ እና የዱቤ መጠን በትክክል ይሙሉ!');
+            return;
+        }
+
+        const today = new Date();
+        const dateStr = today.getDate() + '/' + (today.getMonth() + 1);
+
+        try {
+            await push(ref(db, `catalogs/${catalogKey(currentCatalog)}/credits`), {
+                id: Date.now(),
+                date: dateStr,
+                person: person,
+                item: item,
+                amount: amount
+            });
+
+            document.getElementById('credit-person').value = '';
+            document.getElementById('credit-item').value = '';
+            document.getElementById('credit-amount').value = '';
+
+            const msg = document.getElementById('credit-success-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 1500);
+        } catch (err) {
+            alert('መመዝገብ አልተቻለም: ' + err.message);
+        }
+    };
+
+    window.saveOrder = async function() {
+        const person = document.getElementById('order-person').value.trim();
+        const item = document.getElementById('order-item').value.trim();
+        const total = parseFloat(document.getElementById('order-total').value);
+        const depositInput = document.getElementById('order-deposit').value.trim();
+        const deposit = depositInput === '' ? 0 : parseFloat(depositInput);
+
+        if (!person || !item || isNaN(total) || total <= 0 || isNaN(deposit) || deposit < 0) {
+            alert('እባክዎ የደንበኛውን ስም፣ ትእዛዙን፣ ጠቅላላ ዋጋ እና ቀብድ በትክክል ይሙሉ!');
+            return;
+        }
+
+        const remaining = total - deposit;
+        const today = new Date();
+        const dateStr = today.getDate() + '/' + (today.getMonth() + 1);
+
+        try {
+            await push(ref(db, `catalogs/${catalogKey(currentCatalog)}/orders`), {
+                id: Date.now(),
+                date: dateStr,
+                person: person,
+                item: item,
+                total: total,
+                deposit: deposit,
+                remaining: remaining
+            });
+
+            document.getElementById('order-person').value = '';
+            document.getElementById('order-item').value = '';
+            document.getElementById('order-total').value = '';
+            document.getElementById('order-deposit').value = '';
+            updateLiveOrderRemaining();
+
+            const msg = document.getElementById('order-success-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 1500);
+        } catch (err) {
+            alert('መመዝገብ አልተቻለም: ' + err.message);
+        }
+    };
+
+    window.changePin = async function() {
+        const oldPin = document.getElementById('old-pin-input').value.trim();
+        const newPin = document.getElementById('new-pin-input').value.trim();
+        const savedPin = getCatalogPin(currentCatalog);
+
+        const successMsg = document.getElementById('pin-change-success');
+        const errorMsg = document.getElementById('pin-change-error');
+        successMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        if (oldPin !== savedPin) {
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        if (!newPin || newPin.length < 4) {
+            alert('አዲሱ ፓስወርድ ቢያንስ 4 ፊደል ወይም ቁጥር መሆን አለበት!');
+            return;
+        }
+
+        try {
+            await set(ref(db, `catalog_pins/${currentCatalog}`), newPin);
+            state.pins[currentCatalog] = newPin;
+
+            document.getElementById('old-pin-input').value = '';
+            document.getElementById('new-pin-input').value = '';
+
+            successMsg.style.display = 'block';
+            setTimeout(() => { successMsg.style.display = 'none'; }, 1800);
+        } catch (err) {
+            alert('ፓስወርድ መቀየር አልተቻለም: ' + err.message);
+        }
+    };
+
+    window.deleteItem = async function(docId) {
+        if (confirm('ይህንን የተሸጠ እቃ ምዝገባ ማጥፋት ይፈልጋሉ?')) {
+            await remove(ref(db, `catalogs/${catalogKey(currentCatalog)}/sales/${docId}`));
+        }
+    };
+
+    window.deleteExpense = async function(docId) {
+        if (confirm('ይህንን ወጪ ማጥፋት ይፈልጋሉ?')) {
+            await remove(ref(db, `catalogs/${catalogKey(currentCatalog)}/expenses/${docId}`));
+        }
+    };
+
+    window.deleteCredit = async function(docId) {
+        if (confirm('ይህንን ዱቤ ማጥፋት ይፈልጋሉ?')) {
+            await remove(ref(db, `catalogs/${catalogKey(currentCatalog)}/credits/${docId}`));
+        }
+    };
+
+    window.deleteOrder = async function(docId) {
+        if (confirm('ይህንን ትእዛዝ ማጥፋት ይፈልጋሉ?')) {
+            await remove(ref(db, `catalogs/${catalogKey(currentCatalog)}/orders/${docId}`));
+        }
+    };
+
+    window.renderAll = function() {
+        const items = state.sales;
+        const expenses = state.expenses;
+        const credits = state.credits;
+        const orders = state.orders;
+
+        const salesTbody = document.getElementById('items-table-body');
+        const expTbody = document.getElementById('expense-table-body');
+        const creditTbody = document.getElementById('credit-table-body');
+        const orderTbody = document.getElementById('order-table-body');
+
+        salesTbody.innerHTML = '';
+        expTbody.innerHTML = '';
+        creditTbody.innerHTML = '';
+        orderTbody.innerHTML = '';
+
+        let totalSales = 0;
+        let totalExpenses = 0;
+        let totalCredits = 0;
+
+        if (items.length === 0) {
+            salesTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:8px;">የተመዘገበ እቃ የለም</td></tr>';
+        } else {
+            items.forEach((item) => {
+                totalSales += item.total;
+                salesTbody.innerHTML += `
+                    <tr>
+                        <td>${item.date}</td>
+                        <td>${item.name}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.total.toLocaleString()}</td>
+                        <td><button class="btn-delete" onclick="deleteItem('${item.docId}')">X</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        if (expenses.length === 0) {
+            expTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:8px;">የተመዘገበ ወጪ የለም</td></tr>';
+        } else {
+            expenses.forEach((exp) => {
+                totalExpenses += exp.amount;
+                expTbody.innerHTML += `
+                    <tr>
+                        <td>${exp.date}</td>
+                        <td>${exp.desc}</td>
+                        <td>${exp.amount.toLocaleString()}</td>
+                        <td><button class="btn-delete" onclick="deleteExpense('${exp.docId}')">X</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        if (credits.length === 0) {
+            creditTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:8px;">የተመዘገበ ዱቤ የለም</td></tr>';
+        } else {
+            credits.forEach((c) => {
+                totalCredits += c.amount;
+                creditTbody.innerHTML += `
+                    <tr>
+                        <td>${c.date}</td>
+                        <td>${c.person}</td>
+                        <td>${c.item}</td>
+                        <td>${c.amount.toLocaleString()}</td>
+                        <td><button class="btn-delete" onclick="deleteCredit('${c.docId}')">X</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        const searchQuery = (document.getElementById('order-search-input').value || '').trim().toLowerCase();
+        const filteredOrders = orders.filter(o => o.person.toLowerCase().includes(searchQuery));
+
+        let orderSumTotal = 0;
+        let orderSumDeposit = 0;
+        let orderSumRemaining = 0;
+
+        if (filteredOrders.length === 0) {
+            orderTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:10px;">የተገኘ ትእዛዝ የለም</td></tr>';
+        } else {
+            filteredOrders.forEach((o) => {
+                orderSumTotal += o.total;
+                orderSumDeposit += o.deposit;
+                orderSumRemaining += o.remaining;
+                orderTbody.innerHTML += `
+                    <tr>
+                        <td>${o.date}</td>
+                        <td title="${o.person}">${o.person}</td>
+                        <td title="${o.item}">${o.item}</td>
+                        <td>${o.total.toLocaleString()}</td>
+                        <td>${o.deposit.toLocaleString()}</td>
+                        <td style="font-weight:bold; color:#d97706;">${o.remaining.toLocaleString()}</td>
+                        <td><button class="btn-delete" onclick="deleteOrder('${o.docId}')">X</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        const netAmount = totalSales - totalExpenses;
+
+        document.getElementById('sales-total-val').innerText = totalSales.toLocaleString() + ' ብር';
+        document.getElementById('sales-expense-val').innerText = totalExpenses.toLocaleString() + ' ብር';
+        document.getElementById('sales-net-val').innerText = netAmount.toLocaleString() + ' ብር';
+
+        document.getElementById('exp-sales-val').innerText = totalSales.toLocaleString() + ' ብር';
+        document.getElementById('exp-expense-val').innerText = totalExpenses.toLocaleString() + ' ብር';
+        document.getElementById('exp-net-val').innerText = netAmount.toLocaleString() + ' ብር';
+
+        document.getElementById('credit-total-val').innerText = totalCredits.toLocaleString() + ' ብር';
+
+        document.getElementById('order-sum-total').innerText = orderSumTotal.toLocaleString() + ' ብር';
+        document.getElementById('order-sum-deposit').innerText = orderSumDeposit.toLocaleString() + ' ብር';
+        document.getElementById('order-sum-remaining').innerText = orderSumRemaining.toLocaleString() + ' ብር';
+    };
+</script>
+
+</body>
+</html>
